@@ -1,0 +1,6 @@
+@echo off
+cd /d "c:\Users\Riddhi\CascadeProjects\windsurf-project-2\frontend"
+echo Installing dependencies...
+call npm install
+echo Starting development server...
+call npm start

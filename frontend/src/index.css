@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  * {
+    @apply border-gray-200;
+    cursor: auto !important;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-warm-50 via-pink-50 to-orange-50 text-gray-900;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    cursor: auto !important;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  button, a, [role="button"] {
+    cursor: pointer !important;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/20 backdrop-blur-md border border-white/30;
+  }
+  
+  .premium-button {
+    @apply relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white transition-all duration-300 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl shadow-medium hover:shadow-large hover:scale-105 hover:from-primary-700 hover:to-secondary-700 focus:outline-none focus:ring-4 focus:ring-primary-500/50;
+  }
+  
+  .premium-button-secondary {
+    @apply relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-primary-700 transition-all duration-300 bg-gradient-to-r from-white to-warm-50 border border-primary-200 rounded-xl shadow-soft hover:shadow-medium hover:scale-105 hover:from-primary-50 hover:to-white focus:outline-none focus:ring-4 focus:ring-primary-500/20;
+  }
+  
+  .premium-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300;
+  }
+  
+  .premium-gradient-text {
+    @apply bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent;
+  }
+  
+  .hero-gradient-bg {
+    background: linear-gradient(135deg, #ec4899 0%, #f97316 25%, #eab308 50%, #22c55e 75%, #ec4899 100%);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+  
+  .premium-shadow {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 4px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .nav-glass {
+    @apply bg-white/70 backdrop-blur-lg border-b border-white/20 shadow-soft;
+  }
+  
+  .feature-glow {
+    @apply relative overflow-hidden;
+  }
+  
+  .feature-glow::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary-500/10 to-secondary-500/10 opacity-0 transition-opacity duration-300;
+  }
+  
+  .feature-glow:hover::before {
+    @apply opacity-100;
+  }
+  
+  .stat-counter {
+    @apply text-4xl md:text-5xl font-bold premium-gradient-text;
+  }
+  
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+  
+  .scroll-reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Professional Leaflet Map Styles */
+  .leaflet-container {
+    height: 320px;
+    width: 100%;
+    border-radius: 0.5rem;
+  }
+  
+  .custom-div-icon {
+    background: transparent;
+    border: none;
+  }
+
+  .custom-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Professional Route Styling */
+  .delivery-route {
+    filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+    animation: routeGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes routeGlow {
+    from {
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+    }
+    to {
+      filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.6));
+    }
+  }
+
+  /* Map controls styling */
+  .leaflet-control-zoom {
+    border: 2px solid #3b82f6 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+
+  .leaflet-control-zoom a {
+    background: #ffffff !important;
+    color: #3b82f6 !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .leaflet-control-zoom a:hover {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+  }
+
+  /* Popup styling */
+  .leaflet-popup-content-wrapper {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  }
+
+  .leaflet-popup-tip {
+    background: #ffffff !important;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
