@@ -28,12 +28,18 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: cd frontend && npm install
+        run: |
+          cd frontend
+          npm install
+          chmod +x node_modules/.bin/react-scripts
 
       - name: Build
-        run: cd frontend && npx react-scripts build
+        run: |
+          cd frontend
+          ./node_modules/.bin/react-scripts build
         env:
           PUBLIC_URL: /smart-supply-chain
+          CI: false
 
       - name: Add .nojekyll
         run: touch frontend/build/.nojekyll
