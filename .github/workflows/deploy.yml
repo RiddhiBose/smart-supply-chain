@@ -31,7 +31,7 @@ jobs:
         run: cd frontend && npm install
 
       - name: Build
-        run: cd frontend && npm run build
+        run: cd frontend && npx react-scripts build
         env:
           PUBLIC_URL: /smart-supply-chain
 
