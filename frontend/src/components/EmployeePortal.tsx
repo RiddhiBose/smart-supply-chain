@@ -155,7 +155,7 @@ const EmployeePortal: React.FC = () => {
       currentLocation: { lat: 28.6692, lng: 77.4538 },
       vehicleType: 'motorcycle',
       maxOrders: 8,
-      currentOrders: 3,
+      currentOrders: 4,
       onBreak: false,
       skills: ['express', 'standard'],
       rating: 4.8,
@@ -170,8 +170,8 @@ const EmployeePortal: React.FC = () => {
       status: 'active',
       currentLocation: { lat: 28.6139, lng: 77.2090 },
       vehicleType: 'van',
-      maxOrders: 6,
-      currentOrders: 6,
+      maxOrders: 5,
+      currentOrders: 2,
       onBreak: false,
       skills: ['standard', 'bulk'],
       rating: 4.6,
@@ -187,7 +187,7 @@ const EmployeePortal: React.FC = () => {
       currentLocation: { lat: 28.5355, lng: 77.3910 },
       vehicleType: 'motorcycle',
       maxOrders: 8,
-      currentOrders: 2,
+      currentOrders: 6,
       onBreak: true,
       skills: ['express'],
       rating: 4.9,
@@ -203,7 +203,7 @@ const EmployeePortal: React.FC = () => {
       currentLocation: { lat: 28.6082, lng: 77.3689 },
       vehicleType: 'motorcycle',
       maxOrders: 10,
-      currentOrders: 3,
+      currentOrders: 1,
       onBreak: false,
       skills: ['express', 'standard', 'bulk'],
       rating: 4.9,
@@ -364,6 +364,309 @@ const EmployeePortal: React.FC = () => {
         isOptimized: false
       },
       trafficZones: []
+    },
+    // Additional orders for Overloaded Employee Scenario (EMP002)
+    {
+      id: 'ORD004',
+      customerId: 'CUST004',
+      customerName: 'Vikram Singh',
+      customerPhone: '+91-9876543204',
+      address: 'Sector 18, Noida, Uttar Pradesh 201301',
+      coordinates: { lat: 28.5708, lng: 77.3261 },
+      assignedEmployeeId: 'EMP001',
+      status: 'in_transit',
+      priority: 'standard',
+      orderTime: new Date('2026-04-26T08:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T12:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Grocery Package', weight: '3kg', dimensions: '40x30x20cm' }],
+      value: 2500,
+      paymentMethod: 'cod',
+      pickupAddress: 'SuperMart Warehouse, Noida',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 8.2, duration: 25, geometry: 'route_4_main', waypoints: [] },
+        optimizedRoute: { distance: 7.8, duration: 22, geometry: 'route_4_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    {
+      id: 'ORD005',
+      customerId: 'CUST005',
+      customerName: 'Neha Gupta',
+      customerPhone: '+91-9876543205',
+      address: 'Greater Noida West, Uttar Pradesh 201306',
+      coordinates: { lat: 28.6082, lng: 77.3689 },
+      assignedEmployeeId: 'EMP002',
+      status: 'pending',
+      priority: 'express',
+      orderTime: new Date('2026-04-26T11:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T15:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: true,
+      items: [{ name: 'Smartphone', weight: '0.5kg', dimensions: '20x15x10cm' }],
+      value: 45000,
+      paymentMethod: 'prepaid',
+      pickupAddress: 'Electronics Hub, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 12.5, duration: 35, geometry: 'route_5_main', waypoints: [] },
+        optimizedRoute: { distance: 11.8, duration: 32, geometry: 'route_5_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: [{ lat: 28.5950, lng: 77.3500, severity: 'medium' }]
+    },
+    {
+      id: 'ORD006',
+      customerId: 'CUST006',
+      customerName: 'Arun Kumar',
+      customerPhone: '+91-9876543206',
+      address: 'Indirapuram, Ghaziabad, Uttar Pradesh 201014',
+      coordinates: { lat: 28.6453, lng: 77.3545 },
+      assignedEmployeeId: 'EMP002',
+      status: 'in_transit',
+      priority: 'standard',
+      orderTime: new Date('2026-04-26T09:30:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T13:30:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'delayed',
+      delayReason: 'Vehicle breakdown - resolved',
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Home Decor', weight: '5kg', dimensions: '50x40x30cm' }],
+      value: 3500,
+      paymentMethod: 'cod',
+      pickupAddress: 'HomeStore, Ghaziabad',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 6.8, duration: 20, geometry: 'route_6_main', waypoints: [] },
+        optimizedRoute: { distance: 6.5, duration: 18, geometry: 'route_6_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    // Additional orders for EMP003 to have 6 orders (overloaded scenario)
+    {
+      id: 'ORD007',
+      customerId: 'CUST007',
+      customerName: 'Suresh Yadav',
+      customerPhone: '+91-9876543207',
+      address: 'Vaishali, Ghaziabad, Uttar Pradesh 201012',
+      coordinates: { lat: 28.6500, lng: 77.3400 },
+      assignedEmployeeId: 'EMP003',
+      status: 'in_transit',
+      priority: 'express',
+      orderTime: new Date('2026-04-26T09:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T11:30:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Laptop', weight: '2kg', dimensions: '35x25x5cm' }],
+      value: 65000,
+      paymentMethod: 'prepaid',
+      pickupAddress: 'Tech Store, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 15.5, duration: 40, geometry: 'route_7_main', waypoints: [] },
+        optimizedRoute: { distance: 14.8, duration: 38, geometry: 'route_7_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    {
+      id: 'ORD008',
+      customerId: 'CUST008',
+      customerName: 'Meena Sharma',
+      customerPhone: '+91-9876543208',
+      address: 'Raj Nagar, Ghaziabad, Uttar Pradesh 201002',
+      coordinates: { lat: 28.6750, lng: 77.4350 },
+      assignedEmployeeId: 'EMP003',
+      status: 'pending',
+      priority: 'standard',
+      orderTime: new Date('2026-04-26T10:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T14:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Kitchen Appliances', weight: '4kg', dimensions: '40x30x25cm' }],
+      value: 8500,
+      paymentMethod: 'cod',
+      pickupAddress: 'Home Essentials, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 12.2, duration: 32, geometry: 'route_8_main', waypoints: [] },
+        optimizedRoute: { distance: 11.5, duration: 30, geometry: 'route_8_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    {
+      id: 'ORD009',
+      customerId: 'CUST009',
+      customerName: 'Ravi Kumar',
+      customerPhone: '+91-9876543209',
+      address: 'Crossings Republik, Ghaziabad, Uttar Pradesh 201016',
+      coordinates: { lat: 28.6300, lng: 77.3200 },
+      assignedEmployeeId: 'EMP003',
+      status: 'in_transit',
+      priority: 'express',
+      orderTime: new Date('2026-04-26T08:30:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T12:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'delayed',
+      delayReason: 'Road construction',
+      weatherImpact: false,
+      trafficImpact: true,
+      items: [{ name: 'Books Package', weight: '1.5kg', dimensions: '25x20x15cm' }],
+      value: 1200,
+      paymentMethod: 'cod',
+      pickupAddress: 'Book World, Noida',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 18.0, duration: 50, geometry: 'route_9_main', waypoints: [] },
+        optimizedRoute: { distance: 16.5, duration: 45, geometry: 'route_9_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: [{ lat: 28.6200, lng: 77.3100, severity: 'high' }]
+    },
+    {
+      id: 'ORD010',
+      customerId: 'CUST010',
+      customerName: 'Priya Gupta',
+      customerPhone: '+91-9876543210',
+      address: 'Kaushambi, Ghaziabad, Uttar Pradesh 201012',
+      coordinates: { lat: 28.6450, lng: 77.3250 },
+      assignedEmployeeId: 'EMP003',
+      status: 'pending',
+      priority: 'standard',
+      orderTime: new Date('2026-04-26T11:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T15:30:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Clothing Bundle', weight: '1kg', dimensions: '30x25x10cm' }],
+      value: 3500,
+      paymentMethod: 'prepaid',
+      pickupAddress: 'Fashion Hub, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 14.5, duration: 38, geometry: 'route_10_main', waypoints: [] },
+        optimizedRoute: { distance: 13.8, duration: 35, geometry: 'route_10_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    {
+      id: 'ORD011',
+      customerId: 'CUST011',
+      customerName: 'Deepak Verma',
+      customerPhone: '+91-9876543211',
+      address: 'Sahibabad, Ghaziabad, Uttar Pradesh 201005',
+      coordinates: { lat: 28.6800, lng: 77.3800 },
+      assignedEmployeeId: 'EMP003',
+      status: 'in_transit',
+      priority: 'express',
+      orderTime: new Date('2026-04-26T09:30:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T11:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Medicines', weight: '0.5kg', dimensions: '20x15x10cm' }],
+      value: 800,
+      paymentMethod: 'cod',
+      pickupAddress: 'Health Plus Pharmacy, Noida',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 10.5, duration: 28, geometry: 'route_11_main', waypoints: [] },
+        optimizedRoute: { distance: 9.8, duration: 26, geometry: 'route_11_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    {
+      id: 'ORD012',
+      customerId: 'CUST012',
+      customerName: 'Anita Sharma',
+      customerPhone: '+91-9876543212',
+      address: 'Vasundhara, Ghaziabad, Uttar Pradesh 201012',
+      coordinates: { lat: 28.6650, lng: 77.3650 },
+      assignedEmployeeId: 'EMP003',
+      status: 'pending',
+      priority: 'standard',
+      orderTime: new Date('2026-04-26T10:30:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T14:30:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Grocery Items', weight: '3.5kg', dimensions: '35x25x20cm' }],
+      value: 2200,
+      paymentMethod: 'cod',
+      pickupAddress: 'Fresh Mart, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 16.2, duration: 42, geometry: 'route_12_main', waypoints: [] },
+        optimizedRoute: { distance: 15.5, duration: 40, geometry: 'route_12_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
+    },
+    // Additional order for EMP001 to have 4 orders
+    {
+      id: 'ORD013',
+      customerId: 'CUST013',
+      customerName: 'Kiran Reddy',
+      customerPhone: '+91-9876543213',
+      address: 'Sector 15, Noida, Uttar Pradesh 201301',
+      coordinates: { lat: 28.5900, lng: 77.3100 },
+      assignedEmployeeId: 'EMP001',
+      status: 'pending',
+      priority: 'express',
+      orderTime: new Date('2026-04-26T12:00:00').toISOString(),
+      estimatedDeliveryTime: new Date('2026-04-26T16:00:00').toISOString(),
+      actualDeliveryTime: null,
+      delayStatus: 'none',
+      delayReason: null,
+      weatherImpact: false,
+      trafficImpact: false,
+      items: [{ name: 'Tablet Device', weight: '1kg', dimensions: '30x20x5cm' }],
+      value: 25000,
+      paymentMethod: 'prepaid',
+      pickupAddress: 'Electronics Store, Delhi',
+      customerAbsence: false,
+      absenceHistory: [],
+      routeOptimization: {
+        mainRoute: { distance: 20.5, duration: 55, geometry: 'route_13_main', waypoints: [] },
+        optimizedRoute: { distance: 19.2, duration: 52, geometry: 'route_13_opt', waypoints: [] },
+        isOptimized: false
+      },
+      trafficZones: []
     }
   ];
 
@@ -378,6 +681,7 @@ const EmployeePortal: React.FC = () => {
     
     if (employee) {
       console.log('Employee found:', employee.name);
+      // Show only orders assigned to this employee
       const employeeOrders = mockOrders.filter(order => 
         order.assignedEmployeeId === employeeId
       );
@@ -650,6 +954,23 @@ const EmployeePortal: React.FC = () => {
           ]
         });
       }
+      
+      // Save notification to backend (localStorage) for customer to see
+      const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+      const notification = {
+        id: `notify_${Date.now()}`,
+        orderId: orderId,
+        message: 'Please ensure your availability during delivery for smooth handover of your order.',
+        timestamp: new Date().toISOString(),
+        type: 'info',
+        status: 'sent',
+        sender: currentEmployee?.name || 'Pakhi Dubey',
+        senderPhone: currentEmployee?.phone || '+917380729261'
+      };
+      customerNotifications.push(notification);
+      localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+      
+      console.log('Customer notification saved to backend:', notification);
     } catch (err) {
       console.error('Failed to notify customer:', err);
       addNotification({
@@ -709,35 +1030,132 @@ const EmployeePortal: React.FC = () => {
     }
   };
 
-  const handleOverloadReassignment = (order: Order, employee: Employee) => {
+  // Calculate distance between two coordinates using Haversine formula
+  const calculateDistance = (loc1: { lat: number; lng: number }, loc2: { lat: number; lng: number }): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (loc2.lat - loc1.lat) * Math.PI / 180;
+    const dLng = (loc2.lng - loc1.lng) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(loc1.lat * Math.PI / 180) * Math.cos(loc2.lat * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Find best nearby employee for reassignment
+  const findBestNearbyEmployee = (order: Order, currentEmployee: Employee): Employee | null => {
+    const candidates = mockEmployees.filter(emp => 
+      emp.id !== currentEmployee.id && 
+      emp.status === 'active' && 
+      !emp.onBreak && 
+      emp.currentOrders < emp.maxOrders &&
+      emp.skills.includes(order.priority)
+    );
+    
+    if (candidates.length === 0) return null;
+    
+    // Sort by distance to order location
+    const sorted = candidates.map(emp => ({
+      employee: emp,
+      distance: calculateDistance(emp.currentLocation, order.coordinates)
+    })).sort((a, b) => a.distance - b.distance);
+    
+    return sorted[0]?.employee || null;
+  };
+
+  // Get reassignment recommendation with reason
+  const getReassignmentRecommendation = (order: Order, employee: Employee): { 
+    recommendedEmployee: Employee | null; 
+    reason: string;
+    timeSaved: number;
+  } | null => {
+    const recommendedEmployee = findBestNearbyEmployee(order, employee);
+    if (!recommendedEmployee) return null;
+    
+    const currentDistance = calculateDistance(employee.currentLocation, order.coordinates);
+    const newDistance = calculateDistance(recommendedEmployee.currentLocation, order.coordinates);
+    const timeSaved = Math.round((currentDistance - newDistance) / 0.5); // assuming 0.5 km/min avg speed
+    
+    let reason = '';
     if (employee.currentOrders > 5) {
-      // Find available employee for reassignment
-      const availableEmployee = mockEmployees.find(emp => 
-        emp.id !== employee.id && 
-        emp.status === 'active' && 
-        !emp.onBreak && 
-        emp.currentOrders < emp.maxOrders &&
-        emp.skills.includes(order.priority)
-      );
-      
-      if (availableEmployee) {
-        simulateOrderUpdate(order.id, {
-          assignedEmployeeId: availableEmployee.id
-        });
-        
-        // Update employee order counts
-        const updatedEmployee = { ...employee, currentOrders: employee.currentOrders - 1 };
-        setEmployee(updatedEmployee);
-        
-        addNotification({
-          id: `reassign_${Date.now()}`,
-          orderId: order.id,
-          message: `Order ${order.id} reassigned to ${availableEmployee.name}`,
-          timestamp: new Date(),
-          type: 'info'
-        });
-      }
+      reason = `Employee overloaded (${employee.currentOrders} orders). ${recommendedEmployee.name} is closer and can deliver ${timeSaved > 0 ? timeSaved + ' min faster' : 'efficiently'}.`;
+    } else if (employee.onBreak) {
+      reason = `Employee on break. ${recommendedEmployee.name} is available and nearby.`;
+    } else if (timeSaved > 5) {
+      reason = `${recommendedEmployee.name} can complete delivery ${timeSaved} minutes faster due to better proximity.`;
+    } else {
+      return null;
     }
+    
+    return { recommendedEmployee, reason, timeSaved };
+  };
+
+  const handleOverloadReassignment = (order: Order, employee: Employee, targetEmployee?: Employee) => {
+    const recommendation = getReassignmentRecommendation(order, employee);
+    const newEmployee = targetEmployee || recommendation?.recommendedEmployee;
+    
+    if (newEmployee) {
+      // Update order assignment
+      simulateOrderUpdate(order.id, {
+        assignedEmployeeId: newEmployee.id
+      });
+      
+      // Update employee order counts
+      const updatedCurrentEmployee = { ...employee, currentOrders: employee.currentOrders - 1 };
+      setEmployee(updatedCurrentEmployee);
+      
+      // Update target employee count in mockEmployees
+      const targetEmpIndex = mockEmployees.findIndex(emp => emp.id === newEmployee.id);
+      if (targetEmpIndex !== -1) {
+        mockEmployees[targetEmpIndex].currentOrders += 1;
+      }
+      
+      // Save updated order to backend (localStorage) for CustomerPortal to see
+      const backendOrders = JSON.parse(localStorage.getItem('backendOrders') || '[]');
+      const existingIndex = backendOrders.findIndex((o: any) => o.id === order.id);
+      const updatedOrder = {
+        id: order.id,
+        assignedEmployee: {
+          id: newEmployee.id,
+          name: newEmployee.name,
+          phone: newEmployee.phone
+        },
+        estimatedDelivery: order.estimatedDeliveryTime ? new Date(order.estimatedDeliveryTime).toLocaleString() : 'N/A',
+        status: order.status
+      };
+      if (existingIndex >= 0) {
+        backendOrders[existingIndex] = { ...backendOrders[existingIndex], ...updatedOrder };
+      } else {
+        backendOrders.push(updatedOrder);
+      }
+      localStorage.setItem('backendOrders', JSON.stringify(backendOrders));
+      
+      // Add notification for employee
+      addNotification({
+        id: `reassign_${Date.now()}`,
+        orderId: order.id,
+        message: `Order ${order.id} reassigned from ${employee.name} to ${newEmployee.name}`,
+        timestamp: new Date(),
+        type: 'info'
+      });
+      
+      // Save notification for customer about reassignment
+      const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+      customerNotifications.push({
+        id: `reassign_customer_${Date.now()}`,
+        orderId: order.id,
+        message: `Your order has been reassigned to a new delivery agent: ${newEmployee.name} (Phone: ${newEmployee.phone}). ${recommendation?.reason || 'This change optimizes delivery time.'}`,
+        timestamp: new Date().toISOString(),
+        type: 'info',
+        sender: newEmployee.name,
+        senderPhone: newEmployee.phone,
+        status: 'sent'
+      });
+      localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+      
+      return true;
+    }
+    return false;
   };
 
   const handleBreakCondition = (employee: Employee) => {
@@ -855,39 +1273,85 @@ const EmployeePortal: React.FC = () => {
         .bindPopup(`<b>Your Location</b><br>${employee.name}`)
         .openPopup();
 
-      // Add markers for all assigned orders
+      // Add routes and markers for all assigned orders
       orders.forEach((order, index) => {
-        const orderIcon = L.divIcon({
-          html: order.priority === 'express' ? '⚡' : '📦',
-          iconSize: [30, 30],
-          className: 'custom-div-icon'
-        });
-        
-        L.marker([order.coordinates.lat, order.coordinates.lng], { icon: orderIcon })
-          .addTo(map)
-          .bindPopup(`
-            <b>${order.id}</b><br>
-            Customer: ${order.customerName}<br>
-            Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
-            Priority: ${order.priority.toUpperCase()}<br>
-            Address: ${order.address}
-          `);
-
-        // Draw route line from employee to each order
-        const routeCoordinates = [
-          [employee.currentLocation.lat, employee.currentLocation.lng],
-          [order.coordinates.lat, order.coordinates.lng]
-        ];
-        
-        const routeColor = order.priority === 'express' ? 'red' : 
-                          order.status === 'delayed' ? 'orange' : 'blue';
-        
-        (L.polyline as any)(routeCoordinates, {
-          color: routeColor,
-          weight: order.priority === 'express' ? 4 : 3,
-          opacity: 0.7,
-          dashArray: order.status === 'delayed' ? '5, 5' : '10, 10'
-        }).addTo(map);
+        // Draw route line from pickup to delivery using routeOptimization waypoints
+        const routeWaypoints = order.routeOptimization?.mainRoute?.waypoints || [];
+        if (routeWaypoints.length >= 2) {
+          const routeCoordinates = routeWaypoints.map((wp: { lat: number; lng: number }) => [wp.lat, wp.lng]);
+          
+          const routeColor = '#3b82f6'; // Blue for all routes
+          
+          (L.polyline as any)(routeCoordinates, {
+            color: routeColor,
+            weight: 4,
+            opacity: 0.8,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }).addTo(map);
+          
+          // Add pickup marker
+          const pickupIcon = L.divIcon({
+            html: '📍',
+            iconSize: [25, 25],
+            className: 'custom-div-icon'
+          });
+          
+          const pickupPoint = routeWaypoints[0];
+          L.marker([pickupPoint.lat, pickupPoint.lng], { icon: pickupIcon })
+            .addTo(map)
+            .bindPopup(`<b>Pickup: ${order.id}</b><br>${order.pickupAddress}`);
+          
+          // Add delivery marker
+          const deliveryIcon = L.divIcon({
+            html: order.priority === 'express' ? '⚡' : '📦',
+            iconSize: [30, 30],
+            className: 'custom-div-icon'
+          });
+          
+          const deliveryPoint = routeWaypoints[routeWaypoints.length - 1];
+          L.marker([deliveryPoint.lat, deliveryPoint.lng], { icon: deliveryIcon })
+            .addTo(map)
+            .bindPopup(`
+              <b>${order.id}</b><br>
+              Customer: ${order.customerName}<br>
+              Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
+              Priority: ${order.priority.toUpperCase()}<br>
+              Address: ${order.address}
+            `);
+        } else {
+          // Fallback: draw direct line from employee to order
+          const routeCoordinates = [
+            [employee.currentLocation.lat, employee.currentLocation.lng],
+            [order.coordinates.lat, order.coordinates.lng]
+          ];
+          
+          const routeColor = '#3b82f6'; // Blue for all routes
+          
+          (L.polyline as any)(routeCoordinates, {
+            color: routeColor,
+            weight: 3,
+            opacity: 0.7,
+            dashArray: '10, 10'
+          }).addTo(map);
+          
+          // Add order marker
+          const orderIcon = L.divIcon({
+            html: order.priority === 'express' ? '⚡' : '📦',
+            iconSize: [30, 30],
+            className: 'custom-div-icon'
+          });
+          
+          L.marker([order.coordinates.lat, order.coordinates.lng], { icon: orderIcon })
+            .addTo(map)
+            .bindPopup(`
+              <b>${order.id}</b><br>
+              Customer: ${order.customerName}<br>
+              Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
+              Priority: ${order.priority.toUpperCase()}<br>
+              Address: ${order.address}
+            `);
+        }
       });
 
       mapInstanceRef.current = map;
@@ -1072,7 +1536,7 @@ const EmployeePortal: React.FC = () => {
           >
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <UserCheck className="w-8 h-8 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Employee Login</h2>
@@ -1387,8 +1851,10 @@ const EmployeePortal: React.FC = () => {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-600">Current Orders</span>
-                    <span className="font-medium text-gray-900">{employee?.currentOrders}/{employee?.maxOrders}</span>
+                    <span className="text-sm text-gray-600">Total Orders</span>
+                    <span className="font-medium text-gray-900">
+                      {(employee?.currentOrders || 0) > 5 ? `${employee?.currentOrders || 0} (overloaded)` : employee?.currentOrders || 0}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Rating</span>
@@ -1641,8 +2107,8 @@ const EmployeePortal: React.FC = () => {
             
             <div 
               ref={mapRef} 
-              className="rounded-xl overflow-hidden" 
-              style={{ height: '400px', width: '100%' }}
+              className="rounded-xl overflow-hidden relative"
+              style={{ height: '400px', width: '100%', position: 'relative', zIndex: 0 }}
             >
               {(!employee || orders.length === 0) && (
                 <div className="h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -1674,9 +2140,67 @@ const EmployeePortal: React.FC = () => {
             
             {recommendations.length === 0 ? (
               <div className="text-center py-8">
-                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">All Systems Optimal</h3>
-                <p className="text-gray-600">No immediate issues detected. All systems operating normally.</p>
+                {/* Personalized Demo Content for Each Employee - replaces 'All Systems Optimal' */}
+                {employee && (
+                  <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                        <UserCheck className="w-8 h-8 text-white" />
+                      </div>
+                    </div>
+                    {(() => {
+                      const personalizedContent: Record<string, { icon: string; title: string; message: string; stat: string; color: string }> = {
+                        'EMP001': { 
+                          icon: '🌟', 
+                          title: 'Top Performer', 
+                          message: 'You have maintained a 98% on-time delivery rate this month. Keep up the excellent work!', 
+                          stat: '156 deliveries completed',
+                          color: 'from-yellow-400 to-orange-500'
+                        },
+                        'EMP002': { 
+                          icon: '📈', 
+                          title: 'Rising Star', 
+                          message: 'Your efficiency has improved by 15% this week. You are handling express orders exceptionally well.', 
+                          stat: '42 express deliveries this month',
+                          color: 'from-green-400 to-blue-500'
+                        },
+                        'EMP003': { 
+                          icon: '🏆', 
+                          title: 'Customer Favorite', 
+                          message: 'You received 5 five-star ratings this week. Customers appreciate your professionalism!', 
+                          stat: '4.9 average rating',
+                          color: 'from-purple-400 to-pink-500'
+                        },
+                        'EMP004': { 
+                          icon: '⚡', 
+                          title: 'Speed Champion', 
+                          message: 'Pakhi, you have the fastest average delivery time in your zone. Your route optimization skills are exceptional!', 
+                          stat: 'Avg 28 min per delivery',
+                          color: 'from-red-400 to-orange-500'
+                        }
+                      };
+                      const content = personalizedContent[employee.id] || { 
+                        icon: '👋', 
+                        title: 'Welcome Back', 
+                        message: 'Your dashboard is ready. Check your assigned orders and optimize your routes.', 
+                        stat: `${employee.currentOrders} active orders`,
+                        color: 'from-blue-400 to-purple-500'
+                      };
+                      return (
+                        <div className="text-center space-y-3">
+                          <div className="text-4xl mb-2">{content.icon}</div>
+                          <h3 className="text-xl font-bold bg-gradient-to-r {content.color} bg-clip-text text-transparent">
+                            {content.title}
+                          </h3>
+                          <p className="text-gray-700">{content.message}</p>
+                          <div className="inline-block px-4 py-2 bg-white rounded-full shadow-sm mt-2">
+                            <p className="text-sm font-semibold text-blue-600">📊 {content.stat}</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
@@ -1915,8 +2439,8 @@ const EmployeePortal: React.FC = () => {
                 
                 <div 
                   ref={workspaceMapRef}
-                  className="bg-white rounded-lg overflow-hidden"
-                  style={{ height: '400px', width: '100%' }}
+                  className="bg-white rounded-lg overflow-hidden relative"
+                  style={{ height: '400px', width: '100%', position: 'relative', zIndex: 1 }}
                 />
                 
                 <div className="mt-4 space-y-2">
@@ -2002,44 +2526,92 @@ const EmployeePortal: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Overload Detection */}
-                  {employee.currentOrders > 5 && (
-                    <div className="bg-white rounded-lg p-4">
-                      <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                        <AlertTriangle className="w-4 h-4 mr-2 text-red-600" />
-                        Employee Overload
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Employee has {employee.currentOrders} orders (max: {employee.maxOrders}).
-                      </p>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleOverloadReassignment(selectedOrderForWorkspace, employee)}
-                        className="w-full bg-orange-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-orange-700 transition-colors"
-                      >
-                        Reassign Order
-                      </motion.button>
-                    </div>
-                  )}
+                  {/* Reassignment Recommendation - Shows when overload, break, or faster delivery possible */}
+                  {(() => {
+                    const recommendation = getReassignmentRecommendation(selectedOrderForWorkspace, employee);
+                    const canReassign = recommendation !== null || employee.currentOrders > 5 || employee.onBreak;
+                    const rec = recommendation || (employee.currentOrders > 5 ? {
+                      recommendedEmployee: findBestNearbyEmployee(selectedOrderForWorkspace, employee),
+                      reason: `Employee overloaded (${employee.currentOrders} orders). Consider reassigning to optimize delivery.`,
+                      timeSaved: 0
+                    } : null);
+                    
+                    return canReassign && rec?.recommendedEmployee ? (
+                      <div className="bg-white rounded-lg p-4 border-2 border-orange-200">
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <AlertTriangle className="w-4 h-4 mr-2 text-orange-600" />
+                          Reassign Order Recommendation
+                        </h4>
+                        <div className="space-y-2 mb-3">
+                          <p className="text-sm text-gray-700">
+                            <span className="font-semibold">Recommended:</span> {rec.recommendedEmployee.name} ({rec.recommendedEmployee.id})
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Reason:</span> {rec.reason}
+                          </p>
+                          {rec.timeSaved > 0 && (
+                            <p className="text-sm text-green-600">
+                              <span className="font-semibold">Time Saved:</span> {rec.timeSaved} minutes
+                            </p>
+                          )}
+                        </div>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => rec.recommendedEmployee && handleOverloadReassignment(selectedOrderForWorkspace, employee, rec.recommendedEmployee)}
+                          className="w-full bg-orange-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-orange-700 transition-colors"
+                        >
+                          Reassign Order to {rec.recommendedEmployee.name}
+                        </motion.button>
+                      </div>
+                    ) : null;
+                  })()}
 
-                  {/* Break Condition */}
-                  {employee.onBreak && (
-                    <div className="bg-white rounded-lg p-4">
+                  {/* Notify Customer - Shows when customer has absence history */}
+                  {selectedOrderForWorkspace.absenceHistory && selectedOrderForWorkspace.absenceHistory.length > 0 && (
+                    <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
                       <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-yellow-600" />
-                        Employee on Break
+                        <UserCheck className="w-4 h-4 mr-2 text-blue-600" />
+                        Customer Absence History
                       </h4>
-                      <p className="text-sm text-gray-600 mb-3">
-                        Employee is currently on break. Orders will be redistributed.
-                      </p>
+                      <div className="space-y-1 mb-3">
+                        {selectedOrderForWorkspace.absenceHistory.slice(0, 2).map((absence, idx) => (
+                          <p key={idx} className="text-xs text-gray-600">
+                            {absence.date}: {absence.reason} {absence.notified ? '(✓ Notified)' : '(✗ Not notified)'}
+                          </p>
+                        ))}
+                      </div>
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleBreakCondition(employee)}
-                        className="w-full bg-yellow-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-yellow-700 transition-colors"
+                        onClick={() => {
+                          // Save notification to localStorage for customer to see
+                          const customerNotifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+                          const newNotification = {
+                            id: `notify_${Date.now()}`,
+                            orderId: selectedOrderForWorkspace.id,
+                            message: `Delivery team is trying to reach you. Please ensure you are available at ${selectedOrderForWorkspace.address} for order delivery.`,
+                            timestamp: new Date().toISOString(),
+                            type: 'info'
+                          };
+                          customerNotifications.push(newNotification);
+                          localStorage.setItem('customerNotifications', JSON.stringify(customerNotifications));
+                          
+                          // Also add to employee notifications
+                          addNotification({
+                            id: `notify_${Date.now()}`,
+                            orderId: selectedOrderForWorkspace.id,
+                            message: `Customer notified for order ${selectedOrderForWorkspace.id}`,
+                            timestamp: new Date(),
+                            type: 'info'
+                          });
+                          
+                          // Backend call would go here in production
+                          console.log('Customer notified for order', selectedOrderForWorkspace.id);
+                        }}
+                        className="w-full bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700 transition-colors"
                       >
-                        Redistribute Orders
+                        Notify Customer
                       </motion.button>
                     </div>
                   )}

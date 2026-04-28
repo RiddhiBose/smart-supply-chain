@@ -125,6 +125,15 @@ const CustomerPortal: React.FC = () => {
     };
   };
 
+  // Check if actions are allowed (>45 minutes remaining until delivery)
+  const canPerformActions = (order: OrderStatus): boolean => {
+    if (!order.estimatedDelivery) return false;
+    const deliveryTime = new Date(order.estimatedDelivery).getTime();
+    const now = new Date().getTime();
+    const diffMinutes = (deliveryTime - now) / (1000 * 60);
+    return diffMinutes > 45;
+  };
+
   // Initialize map when showLocation changes and orderStatus exists
   useEffect(() => {
     if (showLocation && orderStatus && mapRef.current) {
@@ -241,6 +250,88 @@ const CustomerPortal: React.FC = () => {
         { lat: 28.6500, lng: 77.4350, severity: 'medium' },
         { lat: 28.6600, lng: 77.4450, severity: 'high' }
       ]
+    },
+    // Orders for Overloaded Employee Scenario (assigned to EMP002 - Priya Sharma)
+    'ORD004': {
+      id: 'ORD004',
+      status: 'in_transit',
+      estimatedDelivery: '2026-04-26, 12:00 pm',
+      items: [{ name: 'Grocery Package', quantity: 1 }],
+      currentLocation: 'Sector 18, Noida',
+      lastUpdate: '2026-04-26 11:30 AM',
+      trackingNumber: 'TRK-ORD004',
+      customerName: 'Vikram Singh',
+      deliveryAddress: 'Sector 18, Noida, Uttar Pradesh 201301',
+      priority: 'standard',
+      assignedEmployee: {
+        id: 'EMP002',
+        name: 'Priya Sharma',
+        phone: '+91-9876543211',
+        currentLocation: { lat: 28.6139, lng: 77.2090 }
+      },
+      coordinates: { lat: 28.5708, lng: 77.3261 },
+      customerPhone: '+91-9876543204',
+      pickupAddress: 'SuperMart Warehouse, Noida',
+      delayStatus: 'none',
+      delayReason: undefined,
+      trafficImpact: false,
+      weatherImpact: false,
+      customerAbsence: false,
+      absenceHistory: []
+    },
+    'ORD005': {
+      id: 'ORD005',
+      status: 'pending',
+      estimatedDelivery: '2026-04-26, 15:00 pm',
+      items: [{ name: 'Smartphone', quantity: 1 }],
+      currentLocation: 'Electronics Hub, Delhi',
+      lastUpdate: '2026-04-26 11:00 AM',
+      trackingNumber: 'TRK-ORD005',
+      customerName: 'Neha Gupta',
+      deliveryAddress: 'Greater Noida West, Uttar Pradesh 201306',
+      priority: 'express',
+      assignedEmployee: {
+        id: 'EMP002',
+        name: 'Priya Sharma',
+        phone: '+91-9876543211',
+        currentLocation: { lat: 28.6139, lng: 77.2090 }
+      },
+      coordinates: { lat: 28.6082, lng: 77.3689 },
+      customerPhone: '+91-9876543205',
+      pickupAddress: 'Electronics Hub, Delhi',
+      delayStatus: 'none',
+      delayReason: undefined,
+      trafficImpact: true,
+      weatherImpact: false,
+      customerAbsence: false,
+      absenceHistory: []
+    },
+    'ORD006': {
+      id: 'ORD006',
+      status: 'in_transit',
+      estimatedDelivery: '2026-04-26, 13:30 pm',
+      items: [{ name: 'Home Decor', quantity: 1 }],
+      currentLocation: 'Indirapuram, Ghaziabad',
+      lastUpdate: '2026-04-26 10:30 AM',
+      trackingNumber: 'TRK-ORD006',
+      customerName: 'Arun Kumar',
+      deliveryAddress: 'Indirapuram, Ghaziabad, Uttar Pradesh 201014',
+      priority: 'standard',
+      assignedEmployee: {
+        id: 'EMP002',
+        name: 'Priya Sharma',
+        phone: '+91-9876543211',
+        currentLocation: { lat: 28.6139, lng: 77.2090 }
+      },
+      coordinates: { lat: 28.6453, lng: 77.3545 },
+      customerPhone: '+91-9876543206',
+      pickupAddress: 'HomeStore, Ghaziabad',
+      delayStatus: 'delayed',
+      delayReason: 'Vehicle breakdown - resolved',
+      trafficImpact: false,
+      weatherImpact: false,
+      customerAbsence: false,
+      absenceHistory: []
     }
   };
 
@@ -255,7 +346,22 @@ const CustomerPortal: React.FC = () => {
     
     // Simulate API call
     setTimeout(() => {
-      const foundOrder = mockOrders[orderId.toUpperCase()];
+      let foundOrder = mockOrders[orderId.toUpperCase()];
+      
+      // Check backend (localStorage) for updated order data (reassignment, etc.)
+      const backendOrders = JSON.parse(localStorage.getItem('backendOrders') || '[]');
+      const backendOrder = backendOrders.find((o: any) => o.id === orderId.toUpperCase());
+      
+      if (backendOrder && foundOrder) {
+        // Merge backend updates with local order data
+        foundOrder = {
+          ...foundOrder,
+          assignedEmployee: backendOrder.assignedEmployee || foundOrder.assignedEmployee,
+          estimatedDelivery: backendOrder.estimatedDelivery || foundOrder.estimatedDelivery,
+          status: backendOrder.status || foundOrder.status,
+          currentLocation: backendOrder.currentLocation || foundOrder.currentLocation
+        };
+      }
       
       if (foundOrder) {
         setOrderStatus(foundOrder);
@@ -596,6 +702,45 @@ const CustomerPortal: React.FC = () => {
                   <Package className="w-6 h-6 text-primary-600 mr-2" />
                   <h3 className="text-xl font-semibold text-gray-900">Order Information</h3>
                 </div>
+
+                {/* Customer Notification Banner - Shows notification from delivery team */}
+                {(() => {
+                  // Check for notifications from backend (localStorage for demo)
+                  const notifications = JSON.parse(localStorage.getItem('customerNotifications') || '[]');
+                  const orderNotifications = notifications.filter((n: any) => n.orderId === orderStatus?.id);
+                  const latestNotification = orderNotifications[orderNotifications.length - 1];
+                  
+                  return latestNotification ? (
+                    <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-xl p-4">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0">
+                          <AlertCircle className="w-5 h-5 text-blue-500 mt-0.5" />
+                        </div>
+                        <div className="ml-3 flex-1">
+                          <h4 className="text-sm font-semibold text-blue-900">
+                            Notification from Delivery Team
+                          </h4>
+                          <p className="mt-1 text-sm text-blue-700">
+                            {latestNotification.message}
+                          </p>
+                          {latestNotification.sender && (
+                            <p className="mt-1 text-xs text-blue-600">
+                              From: {latestNotification.sender} {latestNotification.senderPhone && `(${latestNotification.senderPhone})`}
+                            </p>
+                          )}
+                          {latestNotification.status === 'sent' && (
+                            <p className="mt-1 text-xs text-green-600 font-medium">
+                              ✓ Message delivered
+                            </p>
+                          )}
+                          <p className="mt-1 text-xs text-blue-500">
+                            {new Date(latestNotification.timestamp).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="space-y-4">
@@ -681,6 +826,55 @@ const CustomerPortal: React.FC = () => {
                         <p className="font-medium text-gray-900">{orderStatus.assignedEmployee.id}</p>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Actions Section */}
+                {orderStatus && (
+                  <div className="mt-6 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-100">
+                    <div className="flex items-center mb-4">
+                      <Clock className="w-5 h-5 text-orange-600 mr-2" />
+                      <h4 className="font-semibold text-gray-900">Actions</h4>
+                    </div>
+                    
+                    {(() => {
+                      const actionsAllowed = canPerformActions(orderStatus);
+                      return actionsAllowed ? (
+                        <div className="flex flex-wrap gap-3">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium text-sm"
+                            onClick={() => {
+                              // TODO: Connect to backend API for rescheduling
+                              console.log('Reschedule delivery for', orderStatus.id);
+                            }}
+                          >
+                            Reschedule delivery
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
+                            onClick={() => {
+                              // TODO: Connect to backend API for address update
+                              console.log('Update address for', orderStatus.id);
+                            }}
+                          >
+                            Update address
+                          </motion.button>
+                        </div>
+                      ) : (
+                        <div className="p-4 bg-orange-100 rounded-lg">
+                          <p className="text-orange-800 font-medium text-sm">
+                            This action is not possible within 45 minutes of delivery.
+                          </p>
+                          <p className="text-orange-600 text-xs mt-1">
+                            Estimated delivery: {orderStatus.estimatedDelivery}
+                          </p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
@@ -923,50 +1117,7 @@ const CustomerPortal: React.FC = () => {
               </div>
             </div>
 
-            {/* Nearby Delivery People */}
-            <div className="p-4 bg-purple-50 rounded-xl">
-              <div className="flex items-center mb-3">
-                <Users className="w-5 h-5 text-purple-600 mr-2" />
-                <h3 className="font-semibold text-gray-900">Recommended Delivery Partners</h3>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">Share your load with nearby verified delivery partners</p>
-              <div className="space-y-3">
-                {aiData.partners.map((partner, index) => (
-                  <div key={index} className="p-4 bg-white rounded-xl border border-purple-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center mb-2">
-                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                            <UserCheck className="w-4 h-4 text-purple-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{partner.name}</h4>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <span className="text-yellow-500 mr-1">⭐</span>
-                              <span>{partner.rating}</span>
-                              <span className="mx-2">•</span>
-                              <span>{partner.distance}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <span className="mr-4">Capacity: {partner.capacity}</span>
-                          <span>📱 {partner.phone}</span>
-                        </div>
-                      </div>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-                      >
-                        Share Load
-                      </motion.button>
-                    </div>
-                  </div>
-                ))}
-                </div>
-              </div>
-            </motion.div>
+          </motion.div>
         </motion.div>
         );
       })()}
