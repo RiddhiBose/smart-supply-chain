@@ -7,7 +7,7 @@ import './index.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/smart-supply-chain">
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
