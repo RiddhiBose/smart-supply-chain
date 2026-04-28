@@ -134,6 +134,11 @@ const EmployeePortal: React.FC = () => {
   const [selectedOrderForWorkspace, setSelectedOrderForWorkspace] = useState<Order | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  
+  // Map layer toggles for workspace modal
+  const [showMainRoute, setShowMainRoute] = useState(true);
+  const [showOptimizedRoute, setShowOptimizedRoute] = useState(true);
+  const [showTrafficLayer, setShowTrafficLayer] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [localOrders, setLocalOrders] = useState<Order[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1177,6 +1182,11 @@ const EmployeePortal: React.FC = () => {
   };
 
   const openOrderWorkspace = (order: Order) => {
+    // Clear any existing workspace map before opening new order
+    if (workspaceMapInstanceRef.current) {
+      workspaceMapInstanceRef.current.remove();
+      workspaceMapInstanceRef.current = null;
+    }
     setSelectedOrderForWorkspace(order);
     setShowWorkspaceModal(true);
   };
@@ -1184,6 +1194,11 @@ const EmployeePortal: React.FC = () => {
   const closeOrderWorkspace = () => {
     setShowWorkspaceModal(false);
     setSelectedOrderForWorkspace(null);
+    
+    // Reset toggles to default
+    setShowMainRoute(true);
+    setShowOptimizedRoute(true);
+    setShowTrafficLayer(true);
     
     // Clean up workspace map
     if (workspaceMapInstanceRef.current) {
@@ -1242,209 +1257,313 @@ const EmployeePortal: React.FC = () => {
   };
 
   const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return new Date(dateString).toLocaleString();
   };
 
+  // Main map effect for employee dashboard - re-renders when employee or orders change
   useEffect(() => {
-    if (employee && orders.length > 0 && mapRef.current && !mapInstanceRef.current) {
-      // Initialize map centered on employee location
-      const map = L.map(mapRef.current).setView([employee.currentLocation.lat, employee.currentLocation.lng], 12);
-      
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
-
-      // Add employee location marker
-      const employeeIcon = L.divIcon({
-        html: '🚚',
-        iconSize: [30, 30],
-        className: 'custom-div-icon'
-      });
-      
-      L.marker([employee.currentLocation.lat, employee.currentLocation.lng], { icon: employeeIcon })
-        .addTo(map)
-        .bindPopup(`<b>Your Location</b><br>${employee.name}`)
-        .openPopup();
-
-      // Add routes and markers for all assigned orders
-      orders.forEach((order, index) => {
-        // Draw route line from pickup to delivery using routeOptimization waypoints
-        const routeWaypoints = order.routeOptimization?.mainRoute?.waypoints || [];
-        if (routeWaypoints.length >= 2) {
-          const routeCoordinates = routeWaypoints.map((wp: { lat: number; lng: number }) => [wp.lat, wp.lng]);
-          
-          const routeColor = '#3b82f6'; // Blue for all routes
-          
-          (L.polyline as any)(routeCoordinates, {
-            color: routeColor,
-            weight: 4,
-            opacity: 0.8,
-            lineCap: 'round',
-            lineJoin: 'round'
-          }).addTo(map);
-          
-          // Add pickup marker
-          const pickupIcon = L.divIcon({
-            html: '📍',
-            iconSize: [25, 25],
-            className: 'custom-div-icon'
-          });
-          
-          const pickupPoint = routeWaypoints[0];
-          L.marker([pickupPoint.lat, pickupPoint.lng], { icon: pickupIcon })
-            .addTo(map)
-            .bindPopup(`<b>Pickup: ${order.id}</b><br>${order.pickupAddress}`);
-          
-          // Add delivery marker
-          const deliveryIcon = L.divIcon({
-            html: order.priority === 'express' ? '⚡' : '📦',
-            iconSize: [30, 30],
-            className: 'custom-div-icon'
-          });
-          
-          const deliveryPoint = routeWaypoints[routeWaypoints.length - 1];
-          L.marker([deliveryPoint.lat, deliveryPoint.lng], { icon: deliveryIcon })
-            .addTo(map)
-            .bindPopup(`
-              <b>${order.id}</b><br>
-              Customer: ${order.customerName}<br>
-              Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
-              Priority: ${order.priority.toUpperCase()}<br>
-              Address: ${order.address}
-            `);
-        } else {
-          // Fallback: draw direct line from employee to order
-          const routeCoordinates = [
-            [employee.currentLocation.lat, employee.currentLocation.lng],
-            [order.coordinates.lat, order.coordinates.lng]
-          ];
-          
-          const routeColor = '#3b82f6'; // Blue for all routes
-          
-          (L.polyline as any)(routeCoordinates, {
-            color: routeColor,
-            weight: 3,
-            opacity: 0.7,
-            dashArray: '10, 10'
-          }).addTo(map);
-          
-          // Add order marker
-          const orderIcon = L.divIcon({
-            html: order.priority === 'express' ? '⚡' : '📦',
-            iconSize: [30, 30],
-            className: 'custom-div-icon'
-          });
-          
-          L.marker([order.coordinates.lat, order.coordinates.lng], { icon: orderIcon })
-            .addTo(map)
-            .bindPopup(`
-              <b>${order.id}</b><br>
-              Customer: ${order.customerName}<br>
-              Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
-              Priority: ${order.priority.toUpperCase()}<br>
-              Address: ${order.address}
-            `);
-        }
-      });
-
-      mapInstanceRef.current = map;
-
-      return () => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.remove();
-          mapInstanceRef.current = null;
-        }
-      };
+    if (!employee || !mapRef.current) return;
+    
+    // Clean up existing map to ensure fresh render for each employee
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
     }
-  }, [employee, orders]);
 
-  // Workspace map initialization
-  useEffect(() => {
-    if (showWorkspaceModal && selectedOrderForWorkspace && employee && workspaceMapRef.current && !workspaceMapInstanceRef.current) {
-      // Initialize map centered on the selected order route
-      const map = L.map(workspaceMapRef.current).setView([
-        (employee.currentLocation.lat + selectedOrderForWorkspace.coordinates.lat) / 2,
-        (employee.currentLocation.lng + selectedOrderForWorkspace.coordinates.lng) / 2
-      ], 11);
-      
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
+    // Initialize map centered on employee location
+    const map = L.map(mapRef.current).setView([employee.currentLocation.lat, employee.currentLocation.lng], 12);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-      // Add employee location marker
-      const employeeIcon = L.divIcon({
-        html: '🚚',
-        iconSize: [30, 30],
-        className: 'custom-div-icon'
-      });
-      
-      L.marker([employee.currentLocation.lat, employee.currentLocation.lng], { icon: employeeIcon })
-        .addTo(map)
-        .bindPopup(`<b>Your Location</b><br>${employee.name}`);
+    // Add employee location marker
+    const employeeIcon = L.divIcon({
+      html: '🚚',
+      iconSize: [30, 30],
+      className: 'custom-div-icon'
+    });
+    
+    L.marker([employee.currentLocation.lat, employee.currentLocation.lng], { icon: employeeIcon })
+      .addTo(map)
+      .bindPopup(`<b>Your Location</b><br>${employee.name}`)
+      .openPopup();
 
-      // Add order location marker
-      const orderIcon = L.divIcon({
-        html: selectedOrderForWorkspace.priority === 'express' ? '⚡' : '📦',
-        iconSize: [30, 30],
-        className: 'custom-div-icon'
-      });
-      
-      L.marker([selectedOrderForWorkspace.coordinates.lat, selectedOrderForWorkspace.coordinates.lng], { icon: orderIcon })
-        .addTo(map)
-        .bindPopup(`
-          <b>${selectedOrderForWorkspace.id}</b><br>
-          Customer: ${selectedOrderForWorkspace.customerName}<br>
-          Status: ${selectedOrderForWorkspace.status.replace('_', ' ').toUpperCase()}
-        `);
-
-      // Draw main route (blue)
-      const mainRouteCoords = selectedOrderForWorkspace.routeOptimization.mainRoute.waypoints;
-      (L.polyline as any)(mainRouteCoords, {
-        color: 'blue',
-        weight: 4,
-        opacity: 0.7,
-        dashArray: '10, 10'
-      }).addTo(map);
-
-      // Draw optimized route (green) if available
-      if (selectedOrderForWorkspace.routeOptimization.isOptimized) {
-        const optimizedRouteCoords = selectedOrderForWorkspace.routeOptimization.optimizedRoute.waypoints;
-        (L.polyline as any)(optimizedRouteCoords, {
-          color: 'green',
+    // Add routes and markers for all assigned orders
+    orders.forEach((order) => {
+      // Draw route line from pickup to delivery using routeOptimization waypoints
+      const routeWaypoints = order.routeOptimization?.mainRoute?.waypoints || [];
+      if (routeWaypoints.length >= 2) {
+        const routeCoordinates = routeWaypoints.map((wp: { lat: number; lng: number }) => [wp.lat, wp.lng]);
+        
+        const routeColor = '#3b82f6'; // Blue for all routes
+        
+        (L.polyline as any)(routeCoordinates, {
+          color: routeColor,
           weight: 4,
-          opacity: 0.7,
-          dashArray: '5, 5'
+          opacity: 0.8,
+          lineCap: 'round',
+          lineJoin: 'round'
         }).addTo(map);
+        
+        // Add pickup marker
+        const pickupIcon = L.divIcon({
+          html: '📍',
+          iconSize: [25, 25],
+          className: 'custom-div-icon'
+        });
+        
+        const pickupPoint = routeWaypoints[0];
+        L.marker([pickupPoint.lat, pickupPoint.lng], { icon: pickupIcon })
+          .addTo(map)
+          .bindPopup(`<b>Pickup: ${order.id}</b><br>${order.pickupAddress}`);
+        
+        // Add delivery marker
+        const deliveryIcon = L.divIcon({
+          html: order.priority === 'express' ? '⚡' : '📦',
+          iconSize: [30, 30],
+          className: 'custom-div-icon'
+        });
+        
+        const deliveryPoint = routeWaypoints[routeWaypoints.length - 1];
+        L.marker([deliveryPoint.lat, deliveryPoint.lng], { icon: deliveryIcon })
+          .addTo(map)
+          .bindPopup(`
+            <b>${order.id}</b><br>
+            Customer: ${order.customerName}<br>
+            Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
+            Priority: ${order.priority.toUpperCase()}<br>
+            Address: ${order.address}
+          `);
+      } else {
+        // Fallback: draw direct line from employee to order
+        const routeCoordinates = [
+          [employee.currentLocation.lat, employee.currentLocation.lng],
+          [order.coordinates.lat, order.coordinates.lng]
+        ];
+        
+        const routeColor = '#3b82f6'; // Blue for all routes
+        
+        (L.polyline as any)(routeCoordinates, {
+          color: routeColor,
+          weight: 3,
+          opacity: 0.7,
+          dashArray: '10, 10'
+        }).addTo(map);
+        
+        // Add order marker
+        const orderIcon = L.divIcon({
+          html: order.priority === 'express' ? '⚡' : '📦',
+          iconSize: [30, 30],
+          className: 'custom-div-icon'
+        });
+        
+        L.marker([order.coordinates.lat, order.coordinates.lng], { icon: orderIcon })
+          .addTo(map)
+          .bindPopup(`
+            <b>${order.id}</b><br>
+            Customer: ${order.customerName}<br>
+            Status: ${order.status.replace('_', ' ').toUpperCase()}<br>
+            Priority: ${order.priority.toUpperCase()}<br>
+            Address: ${order.address}
+          `);
       }
+    });
 
-      // Add traffic zones (red circles)
-      selectedOrderForWorkspace.trafficZones.forEach(zone => {
-        L.circle([zone.lat, zone.lng], {
-          color: 'red',
-          fillColor: '#ff0000',
-          fillOpacity: zone.severity === 'high' ? 0.4 : zone.severity === 'medium' ? 0.3 : 0.2,
-          radius: zone.severity === 'high' ? 1000 : zone.severity === 'medium' ? 800 : 500
-        }).addTo(map).bindPopup('Traffic Zone');
-      });
-
-      workspaceMapInstanceRef.current = map;
-    }
+    mapInstanceRef.current = map;
 
     return () => {
-      if (workspaceMapInstanceRef.current && !showWorkspaceModal) {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [employee, orders]);
+
+  // Workspace map initialization with proper route visualization
+  useEffect(() => {
+    if (!showWorkspaceModal || !selectedOrderForWorkspace || !employee || !workspaceMapRef.current) return;
+
+    // Clean up existing map if toggles changed
+    if (workspaceMapInstanceRef.current) {
+      workspaceMapInstanceRef.current.remove();
+      workspaceMapInstanceRef.current = null;
+    }
+
+    const map = L.map(workspaceMapRef.current);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const allPoints: L.LatLngExpression[] = [];
+
+    // Get route waypoints
+    const mainRouteWaypoints = selectedOrderForWorkspace.routeOptimization?.mainRoute?.waypoints || [];
+    const optimizedRouteWaypoints = selectedOrderForWorkspace.routeOptimization?.optimizedRoute?.waypoints || [];
+    const trafficZones = selectedOrderForWorkspace.trafficZones || [];
+
+    // Collect all points for bounds calculation
+    [...mainRouteWaypoints, ...optimizedRouteWaypoints].forEach(wp => {
+      allPoints.push([wp.lat, wp.lng]);
+    });
+
+    // Draw Main Route (Blue, 7px, solid)
+    if (showMainRoute && mainRouteWaypoints.length >= 2) {
+      const mainRouteCoords = mainRouteWaypoints.map(wp => [wp.lat, wp.lng]);
+      (L.polyline as any)(mainRouteCoords, {
+        color: '#3b82f6', // Blue
+        weight: 7,
+        opacity: 0.85,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+    }
+
+    // Draw Optimized Route (Green, 7px, dashed)
+    if (showOptimizedRoute && optimizedRouteWaypoints.length >= 2) {
+      const optimizedCoords = optimizedRouteWaypoints.map(wp => [wp.lat, wp.lng]);
+      (L.polyline as any)(optimizedCoords, {
+        color: '#22c55e', // Green
+        weight: 7,
+        opacity: 0.85,
+        lineCap: 'round',
+        lineJoin: 'round',
+        dashArray: '15, 10' // Dashed pattern
+      }).addTo(map);
+    }
+
+    // Draw Traffic Segments on affected route sections
+    if (showTrafficLayer && trafficZones.length > 0) {
+      trafficZones.forEach((zone) => {
+        const routeToUse = optimizedRouteWaypoints.length >= 2 ? optimizedRouteWaypoints : mainRouteWaypoints;
+        if (routeToUse.length >= 2) {
+          let closestIdx = 0;
+          let minDist = Infinity;
+          routeToUse.forEach((wp, idx) => {
+            const dist = Math.sqrt(
+              Math.pow(wp.lat - zone.lat, 2) + Math.pow(wp.lng - zone.lng, 2)
+            );
+            if (dist < minDist) {
+              minDist = dist;
+              closestIdx = idx;
+            }
+          });
+
+          const segmentStart = Math.max(0, closestIdx - 3);
+          const segmentEnd = Math.min(routeToUse.length, closestIdx + 4);
+          const segmentCoords = routeToUse.slice(segmentStart, segmentEnd).map(wp => [wp.lat, wp.lng]);
+
+          if (segmentCoords.length >= 2) {
+            let trafficColor = '#eab308'; // Yellow (light)
+            let trafficWeight = 5;
+            if (zone.severity === 'high') {
+              trafficColor = '#ef4444'; // Red (heavy)
+              trafficWeight = 9;
+            } else if (zone.severity === 'medium') {
+              trafficColor = '#f97316'; // Orange (moderate)
+              trafficWeight = 7;
+            }
+
+            (L.polyline as any)(segmentCoords, {
+              color: trafficColor,
+              weight: trafficWeight,
+              opacity: 0.9,
+              lineCap: 'round',
+              lineJoin: 'round'
+            }).addTo(map).bindPopup(`Traffic: ${zone.severity}`);
+          }
+        }
+      });
+    }
+
+    // Add Pickup Marker (Start point)
+    if (mainRouteWaypoints.length >= 1) {
+      const pickupPoint = mainRouteWaypoints[0];
+      allPoints.push([pickupPoint.lat, pickupPoint.lng]);
+      const pickupIcon = L.divIcon({
+        html: '<div style="font-size: 24px;">📍</div>',
+        iconSize: [30, 30],
+        className: 'pickup-marker',
+        iconAnchor: [15, 30]
+      });
+      L.marker([pickupPoint.lat, pickupPoint.lng], { icon: pickupIcon })
+        .addTo(map)
+        .bindPopup(`<b>Pickup</b><br>${selectedOrderForWorkspace.pickupAddress}`);
+    }
+
+    // Add Delivery Marker (End point)
+    if (mainRouteWaypoints.length >= 2) {
+      const deliveryPoint = mainRouteWaypoints[mainRouteWaypoints.length - 1];
+      allPoints.push([deliveryPoint.lat, deliveryPoint.lng]);
+      const deliveryIcon = L.divIcon({
+        html: `<div style="font-size: 24px;">${selectedOrderForWorkspace.priority === 'express' ? '⚡' : '📦'}</div>`,
+        iconSize: [30, 30],
+        className: 'delivery-marker',
+        iconAnchor: [15, 30]
+      });
+      L.marker([deliveryPoint.lat, deliveryPoint.lng], { icon: deliveryIcon })
+        .addTo(map)
+        .bindPopup(`<b>Delivery: ${selectedOrderForWorkspace.id}</b><br>
+          Customer: ${selectedOrderForWorkspace.customerName}<br>
+          Address: ${selectedOrderForWorkspace.address}`);
+    }
+
+    // Add Employee Location Marker
+    const employeeIcon = L.divIcon({
+      html: '<div style="font-size: 24px;">🚚</div>',
+      iconSize: [30, 30],
+      className: 'employee-marker',
+      iconAnchor: [15, 15]
+    });
+    L.marker([employee.currentLocation.lat, employee.currentLocation.lng], { icon: employeeIcon })
+      .addTo(map)
+      .bindPopup(`<b>Your Location</b><br>${employee.name}`);
+
+    // Fit map bounds to show all route points
+    if (allPoints.length > 0) {
+      const bounds = L.latLngBounds(allPoints as L.LatLngExpression[]);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+      map.setView([employee.currentLocation.lat, employee.currentLocation.lng], 12);
+    }
+
+    // Add Legend Control
+    const legend = new (L.Control as any)({ position: 'bottomright' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'map-legend');
+      div.style.cssText = `
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        font-size: 12px;
+        line-height: 1.8;
+        min-width: 140px;
+      `;
+      div.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 8px;">Route Legend</div>
+        <div><span style="display:inline-block;width:20px;height:4px;background:#3b82f6;vertical-align:middle;margin-right:8px;"></span>Main Route</div>
+        <div><span style="display:inline-block;width:20px;height:4px;background:#22c55e;vertical-align:middle;margin-right:8px;border-top:2px dashed #22c55e;"></span>Optimized Route</div>
+        <div><span style="display:inline-block;width:20px;height:6px;background:#ef4444;vertical-align:middle;margin-right:8px;"></span>Heavy Traffic</div>
+        <div><span style="display:inline-block;width:20px;height:5px;background:#f97316;vertical-align:middle;margin-right:8px;"></span>Moderate Traffic</div>
+        <div><span style="display:inline-block;width:20px;height:3px;background:#eab308;vertical-align:middle;margin-right:8px;"></span>Light Traffic</div>
+      `;
+      return div;
+    };
+    legend.addTo(map);
+
+    workspaceMapInstanceRef.current = map;
+
+    return () => {
+      if (workspaceMapInstanceRef.current) {
         workspaceMapInstanceRef.current.remove();
         workspaceMapInstanceRef.current = null;
       }
     };
-  }, [showWorkspaceModal, selectedOrderForWorkspace, employee]);
+  }, [showWorkspaceModal, selectedOrderForWorkspace, employee, showMainRoute, showOptimizedRoute, showTrafficLayer]);
 
   if (!isLoggedIn) {
     return (
@@ -2436,6 +2555,42 @@ const EmployeePortal: React.FC = () => {
                   <Map className="w-5 h-5 mr-2 text-primary-600" />
                   Route Map
                 </h3>
+                
+                {/* Route Toggle Controls */}
+                <div className="flex flex-wrap gap-3 mb-4">
+                  <label className="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={showMainRoute}
+                      onChange={(e) => setShowMainRoute(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">Main Route</span>
+                    <span className="w-3 h-1 bg-blue-500 rounded"></span>
+                  </label>
+                  
+                  <label className="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={showOptimizedRoute}
+                      onChange={(e) => setShowOptimizedRoute(e.target.checked)}
+                      className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                    />
+                    <span className="text-sm text-gray-700">Optimized Route</span>
+                    <span className="w-3 h-1 bg-green-500 rounded border-dashed border-t-2 border-green-500"></span>
+                  </label>
+                  
+                  <label className="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={showTrafficLayer}
+                      onChange={(e) => setShowTrafficLayer(e.target.checked)}
+                      className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
+                    />
+                    <span className="text-sm text-gray-700">Traffic Layer</span>
+                    <span className="w-3 h-1 bg-red-500 rounded"></span>
+                  </label>
+                </div>
                 
                 <div 
                   ref={workspaceMapRef}

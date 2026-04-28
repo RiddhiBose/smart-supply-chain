@@ -6,8 +6,11 @@ import EmployeePortal from './components/EmployeePortal';
 import './index.css';
 
 function App() {
+  // Use basename for GitHub Pages, but not for local development
+  const basename = process.env.NODE_ENV === 'production' ? '/smart-supply-chain' : '';
+  
   return (
-    <Router basename="/smart-supply-chain">
+    <Router basename={basename}>
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
